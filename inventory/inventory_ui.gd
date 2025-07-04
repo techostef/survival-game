@@ -1,20 +1,26 @@
 extends Control
 
-@onready var inventory: Inventory = preload("res://inventory/player_inventory_resource.tres")
+var inventory: Inventory
 @onready var slots: Array = $NinePatchRect/GridContainer.get_children()
 
 var is_open = false
 
 func _ready() -> void:
-	inventory.update.connect(update_slot)
-	update_slot()
+	# Get inventory reference from the player
+	var player = get_parent()
+	if player and "inventory" in player:
+		inventory = player.inventory
+		inventory.update.connect(update_slot)
+		update_slot()
+	else:
+		print("ERROR: Could not find player inventory reference")
 	close()
 	
 func update_slot():
 	for i in range(min(inventory.slots.size(), slots.size())):
 		slots[i].update(inventory.slots[i])
 	
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("inventory"):
 		if is_open:
 			close()

@@ -10,8 +10,120 @@ var has_shot_arrow = false  # Track whether we've shot an arrow during this atta
 
 @export var inventory: Inventory
 
+func _process(_delta):
+	# Check for save and load inputs
+	if Input.is_action_just_pressed("save_game"):
+		save_game()
+		
+	if Input.is_action_just_pressed("load_game"):
+		load_game()
+
 func collect(item):
 	inventory.insert(item)
+	
+# Save the current game state
+func save_game():
+	# Create a new save file
+	var save_data = SaveGame.new()
+	
+	# Store inventory data directly
+	for slot in inventory.slots:
+		if slot.item:
+			save_data.inventory_item_names.append(slot.item.name)
+			save_data.inventory_item_amounts.append(slot.amount)
+			save_data.inventory_item_textures.append(slot.item.texture.resource_path)
+		else:
+			# Empty slot
+			save_data.inventory_item_names.append("")
+			save_data.inventory_item_amounts.append(0)
+			save_data.inventory_item_textures.append("")
+	
+	# Debug information
+	print("Saving inventory with " + str(inventory.slots.size()) + " slots")
+	print("Items saved: " + str(save_data.inventory_item_names))
+
+	# Save to file
+	var error = ResourceSaver.save(save_data, SaveGame.SAVE_GAME_PATH)
+	if error != OK:
+		print("An error occurred while saving the game: ", error)
+		prompt_message("Save Error!")
+	else:
+		print("Game saved successfully!")
+		prompt_message("Game Saved!")
+	
+# Load a saved game
+func load_game():
+	# Debug: Print current inventory slots before loading
+	print("Before loading - Current inventory slots: ", inventory.slots.size())
+	
+	# Check if save file exists
+	if not ResourceLoader.exists(SaveGame.SAVE_GAME_PATH):
+		prompt_message("No save file found!")
+		return
+		
+	# Load the save file
+	var save_data = ResourceLoader.load(SaveGame.SAVE_GAME_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
+	if not save_data or not save_data is SaveGame:
+		prompt_message("Invalid save file!")
+		return
+	
+	# Debug
+	print("Loaded save file with items: " + str(save_data.inventory_item_names))
+	
+	# Check if we have saved inventory data
+	if save_data.inventory_item_names.size() > 0:
+		# Clear the current inventory
+		for slot in inventory.slots:
+			slot.item = null
+			slot.amount = 0
+		
+		# Restore inventory data
+		for i in range(min(inventory.slots.size(), save_data.inventory_item_names.size())):
+			if save_data.inventory_item_names[i] != "" and save_data.inventory_item_amounts[i] > 0:
+				# Find or create item
+				var item_name = save_data.inventory_item_names[i]
+				var item_amount = save_data.inventory_item_amounts[i]
+				var texture_path = save_data.inventory_item_textures[i]
+				
+				# Try to load the item resource
+				var item = null
+				
+				# Check for common item resources first
+				if item_name == "apple":
+					item = load("res://inventory/items/apple_resource.tres")
+				elif item_name == "orange":
+					item = load("res://inventory/items/orange_resource.tres")
+				else:
+					# Try to load by texture path
+					var texture = load(texture_path)
+					if texture:
+						# Create a new inventory item
+						item = InventoryItem.new()
+						item.name = item_name
+						item.texture = texture
+				
+				if item:
+					inventory.slots[i].item = item
+					inventory.slots[i].amount = item_amount
+					print("Restored item: " + item_name + " x" + str(item_amount) + " to slot " + str(i))
+		
+		# Force a UI update
+		inventory.update.emit()
+		
+		# Find any InventoryUI nodes and refresh them manually
+		for child in get_children():
+			if child.has_method("update_slot"):
+				child.update_slot()
+				print("Manually updated inventory UI")
+		
+		# Show success message
+		prompt_message("Game Loaded!")
+	else:
+		prompt_message("Empty save file!")
+
+# Display a notification message (a simple implementation)
+func prompt_message(text: String):
+	print(text) # Replace with UI notification when you create one
 
 func _physics_process(_delta: float) -> void:
 	# Update attack cooldown timer
