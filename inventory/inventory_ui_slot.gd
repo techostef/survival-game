@@ -14,11 +14,25 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	drag_preview.texture = slot.item.texture
 	drag_preview.expand = true
 	drag_preview.size = Vector2(32, 32)  # Adjust size as needed
+	drag_preview.z_index = 50
 	print(slot.item.name)
+	
+	# Create label for item name
+	var item_label = Label.new()
+	item_label.text = str(slot.amount)
+	item_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	item_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	item_label.position = Vector2(25, 20)  # Position below the texture
+	item_label.z_index = 50
+	# Set label font size using LabelSettings
+	var label_settings = LabelSettings.new()
+	label_settings.font_size = 10
+	item_label.label_settings = label_settings
 	
 	# Position the preview at the center of the cursor
 	var control = Control.new()
 	control.add_child(drag_preview)
+	control.add_child(item_label)
 	#drag_preview.position = -0.5 * drag_preview.size
 	
 	# Set the drag preview

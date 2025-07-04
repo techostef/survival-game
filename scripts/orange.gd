@@ -6,7 +6,7 @@ var player = null
 
 func _physics_process(delta: float) -> void:
 	var is_picked = player_in_area and Input.is_action_just_pressed("pick")
-	if is_picked:
+	if is_picked && player:
 		player.collect(item)
 		queue_free()
 
