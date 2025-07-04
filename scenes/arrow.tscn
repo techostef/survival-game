@@ -1,0 +1,52 @@
+[gd_scene load_steps=8 format=3 uid="uid://ckmuudqyplayy"]
+
+[ext_resource type="Script" uid="uid://b44tsdguylu0x" path="res://scripts/arrow.gd" id="1_23jat"]
+[ext_resource type="Texture2D" uid="uid://btg13o06xauks" path="res://assets/arrows.png" id="1_l5ahi"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ndhl"]
+atlas = ExtResource("1_l5ahi")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_acd0x"]
+atlas = ExtResource("1_l5ahi")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6a6ax"]
+atlas = ExtResource("1_l5ahi")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_i4m3f"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2ndhl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_acd0x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6a6ax")
+}],
+"loop": true,
+"name": &"arrow",
+"speed": 10.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_l5ahi"]
+radius = 4.12311
+
+[node name="Arrow" type="Area2D"]
+script = ExtResource("1_23jat")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.625, 0.59375)
+sprite_frames = SubResource("SpriteFrames_i4m3f")
+animation = &"arrow"
+autoplay = "arrow"
+frame_progress = 0.938731
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(5, 0)
+shape = SubResource("CircleShape2D_l5ahi")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -1,0 +1,39 @@
+[gd_scene load_steps=7 format=3 uid="uid://b0kpgwooebtjo"]
+
+[ext_resource type="Script" uid="uid://b6dnb5t0p3d4g" path="res://scripts/orange.gd" id="1_jrtoq"]
+[ext_resource type="Texture2D" uid="uid://c64qeivcxigll" path="res://assets/orange.png" id="2_jrtoq"]
+[ext_resource type="Resource" uid="uid://bnlm3hexjmcmh" path="res://inventory/items/orange_resource.tres" id="2_wpr8x"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wpr8x"]
+atlas = ExtResource("2_jrtoq")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3dmh2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wpr8x")
+}],
+"loop": true,
+"name": &"orange",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7vr8k"]
+radius = 30.0
+
+[node name="orange" type="StaticBody2D"]
+scale = Vector2(0.3, 0.3)
+script = ExtResource("1_jrtoq")
+item = ExtResource("2_wpr8x")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_3dmh2")
+animation = &"orange"
+
+[node name="pickable_area" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pickable_area"]
+shape = SubResource("CircleShape2D_7vr8k")
+
+[connection signal="body_entered" from="pickable_area" to="." method="_on_pickable_area_body_entered"]
