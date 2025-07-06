@@ -1,7 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://ga7iitqa7ryc"]
+[gd_scene load_steps=12 format=3 uid="uid://ga7iitqa7ryc"]
 
 [ext_resource type="Script" uid="uid://f1i5pefs3h4k" path="res://scripts/orange_tree.gd" id="1_22wkm"]
 [ext_resource type="Texture2D" uid="uid://b31ifofe4geip" path="res://assets/punyworld-overworld-tileset.png" id="2_i5kap"]
+[ext_resource type="PackedScene" uid="uid://bbq7smrm8k3vy" path="res://scenes/health_composition.tscn" id="3_ipl1u"]
+[ext_resource type="PackedScene" uid="uid://c1y2751cci4qv" path="res://scenes/hitbox_composition.tscn" id="4_imn87"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_veaef"]
 atlas = ExtResource("2_i5kap")
@@ -38,6 +40,9 @@ radius = 7.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_veaef"]
 radius = 3.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_uyx15"]
+radius = 3.16228
+
 [node name="orange_tree" type="StaticBody2D"]
 scale = Vector2(2, 2)
 script = ExtResource("1_22wkm")
@@ -62,6 +67,15 @@ shape = SubResource("CircleShape2D_66v30")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 4)
 shape = SubResource("CircleShape2D_veaef")
+
+[node name="HealthComposition" parent="." instance=ExtResource("3_ipl1u")]
+
+[node name="HitboxComposition" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("4_imn87")]
+health_component = NodePath("../HealthComposition")
+
+[node name="CollisionHitbox" type="CollisionShape2D" parent="HitboxComposition"]
+position = Vector2(0, 4)
+shape = SubResource("CircleShape2D_uyx15")
 
 [connection signal="body_exited" from="pickable_area" to="." method="_on_pickable_area_body_exited"]
 [connection signal="body_shape_entered" from="pickable_area" to="." method="_on_pickable_area_body_shape_entered"]
