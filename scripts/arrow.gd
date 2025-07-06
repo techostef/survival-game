@@ -17,6 +17,5 @@ func _on_area_entered(area: Area2D) -> void:
 		var attack = Attack.new()
 		attack.attack_damage = 12
 		var hasTakeDamage = area.has_method("take_damage")
-		print("hasTakeDamage", hasTakeDamage)
 		area.take_damage(attack)
 		queue_free() # Destroy the arrow after it hits a hitbox
